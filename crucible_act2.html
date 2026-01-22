@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crucible Act II - Interactive Reading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-bottom: 3px solid #e94560;
+        }
+
+        .header h1 {
+            color: #e94560;
+            font-size: 28px;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .audio-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        audio {
+            width: 100%;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        .control-group label {
+            color: #e94560;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .control-btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #ff5577;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .speed-selector {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid #e94560;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .speed-selector:hover {
+            background: rgba(233, 69, 96, 0.2);
+        }
+
+        .skip-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 180px);
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .pdf-container {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .pdf-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(15, 52, 96, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid #e94560;
+            padding-bottom: 10px;
+        }
+
+        .key-moment {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .key-moment:hover {
+            background: rgba(233, 69, 96, 0.2);
+            border-left-color: #e94560;
+            transform: translateX(5px);
+        }
+
+        .key-moment.active {
+            background: rgba(233, 69, 96, 0.3);
+            border-left-color: #e94560;
+        }
+
+        .moment-time {
+            color: #e94560;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .moment-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .moment-description {
+            color: #bbb;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .current-moment {
+            background: rgba(233, 69, 96, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #e94560;
+        }
+
+        .current-moment h3 {
+            color: #e94560;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .current-moment p {
+            color: #fff;
+            font-size: 15px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff5577;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>The Crucible, Act II by Arthur Miller</h1>
+        <div class="audio-container">
+            <audio id="audioPlayer" controls>
+                <source src="/mnt/user-data/uploads/Crucible_2.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            
+            <div class="audio-controls">
+                <div class="control-group skip-controls">
+                    <button class="control-btn" id="rewind30" title="Rewind 30 seconds">⏪ 30s</button>
+                    <button class="control-btn" id="rewind10" title="Rewind 10 seconds">⏪ 10s</button>
+                    <button class="control-btn" id="forward10" title="Forward 10 seconds">10s ⏩</button>
+                    <button class="control-btn" id="forward30" title="Forward 30 seconds">30s ⏩</button>
+                </div>
+                
+                <div class="control-group">
+                    <label for="playbackSpeed">Speed:</label>
+                    <select id="playbackSpeed" class="speed-selector">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x (Normal)</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="1.75">1.75x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="pdf-container">
+            <iframe src="/mnt/user-data/uploads/14_Crucible_Act_II_Complete.pdf" type="application/pdf"></iframe>
+        </div>
+
+        <div class="sidebar">
+            <h2>📍 Key Moments</h2>
+            
+            <div class="current-moment" id="currentMoment">
+                <h3>NOW PLAYING</h3>
+                <p id="currentText">Introduction</p>
+            </div>
+
+            <div id="keyMoments"></div>
+        </div>
+    </div>
+
+    <script>
+        const keyMoments = [
+            {
+                time: 0,
+                title: "Introduction",
+                description: "The Crucible Act 2 by Arthur Miller",
+                page: 1
+            },
+            {
+                time: 6,
+                title: "Review and Anticipate",
+                description: "Salem is gripped by mounting hysteria as Act 1 closes",
+                page: 2
+            },
+            {
+                time: 49,
+                title: "Act II Begins",
+                description: "Common room of Proctor's house, eight days later",
+                page: 2
+            },
+            {
+                time: 150,
+                title: "John and Elizabeth",
+                description: "Proctor tastes Elizabeth's stew and adds salt",
+                page: 3
+            },
+            {
+                time: 240,
+                title: "Tension in the Marriage",
+                description: "Strained conversation reveals their troubled relationship",
+                page: 4
+            },
+            {
+                time: 420,
+                title: "Mary Warren Returns",
+                description: "Mary comes home from the court proceedings",
+                page: 6
+            },
+            {
+                time: 480,
+                title: "The Poppet Gift",
+                description: "Mary gives Elizabeth a poppet she made in court",
+                page: 7
+            },
+            {
+                time: 600,
+                title: "Fourteen Arrests",
+                description: "Mary reveals the growing number of accused witches",
+                page: 8
+            },
+            {
+                time: 720,
+                title: "Sarah Good's Confession",
+                description: "Discussion of false confessions to avoid hanging",
+                page: 9
+            },
+            {
+                time: 900,
+                title: "Proctor's Dilemma",
+                description: "John struggles with revealing Abigail's fraud",
+                page: 10
+            },
+            {
+                time: 1080,
+                title: "Elizabeth's Suspicion",
+                description: "Elizabeth learns John was alone with Abigail",
+                page: 11
+            },
+            {
+                time: 1260,
+                title: "The Commandments Test",
+                description: "Proctor struggles to remember all Ten Commandments",
+                page: 12
+            },
+            {
+                time: 1440,
+                title: "Reverend Hale Visits",
+                description: "Hale questions the Christian character of the house",
+                page: 13
+            },
+            {
+                time: 1620,
+                title: "Golden Candlesticks",
+                description: "Proctor criticizes Reverend Parris's materialistic demands",
+                page: 14
+            },
+            {
+                time: 1800,
+                title: "Reciting the Commandments",
+                description: "Proctor forgets the commandment against adultery",
+                page: 15
+            },
+            {
+                time: 1980,
+                title: "Abigail's Revelation",
+                description: "Proctor reveals Abigail told him it had nothing to do with witchcraft",
+                page: 16
+            },
+            {
+                time: 2160,
+                title: "Rebecca Nurse Arrested",
+                description: "Giles and Francis bring shocking news",
+                page: 18
+            },
+            {
+                time: 2340,
+                title: "Cheever Arrives",
+                description: "The court clerk comes with a warrant for Elizabeth",
+                page: 19
+            },
+            {
+                time: 2520,
+                title: "The Poppet Evidence",
+                description: "A needle is found in the poppet - matching Abigail's injury",
+                page: 20
+            },
+            {
+                time: 2700,
+                title: "Elizabeth is Arrested",
+                description: "Elizabeth is taken to jail despite Proctor's protests",
+                page: 22
+            },
+            {
+                time: 2880,
+                title: "Vengeance Walking Salem",
+                description: "Proctor's powerful speech about what's truly happening",
+                page: 23
+            },
+            {
+                time: 3060,
+                title: "Mary's Confession",
+                description: "Mary Warren must testify that she made the poppet",
+                page: 24
+            },
+            {
+                time: 3240,
+                title: "The Threat of Lechery",
+                description: "Mary warns that Abigail will accuse Proctor of adultery",
+                page: 25
+            },
+            {
+                time: 3420,
+                title: "Act II Conclusion",
+                description: "Proctor forces Mary to come to court with him",
+                page: 25
+            }
+        ];
+
+        const audio = document.getElementById('audioPlayer');
+        const momentsContainer = document.getElementById('keyMoments');
+        const currentText = document.getElementById('currentText');
+        const pdfFrame = document.querySelector('.pdf-container iframe');
+        let currentMomentIndex = 0;
+
+        // Playback speed control
+        const speedSelector = document.getElementById('playbackSpeed');
+        speedSelector.addEventListener('change', (e) => {
+            audio.playbackRate = parseFloat(e.target.value);
+        });
+
+        // Skip forward/backward controls
+        document.getElementById('rewind30').addEventListener('click', () => {
+            audio.currentTime = Math.max(0, audio.currentTime - 30);
+        });
+
+        document.getElementById('rewind10').addEventListener('click', () => {
+            audio.currentTime = Math.max(0, audio.currentTime - 10);
+        });
+
+        document.getElementById('forward10').addEventListener('click', () => {
+            audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+        });
+
+        document.getElementById('forward30').addEventListener('click', () => {
+            audio.currentTime = Math.min(audio.duration, audio.currentTime + 30);
+        });
+
+        // Function to scroll PDF to specific page
+        function scrollPDFToPage(pageNumber) {
+            // Update iframe src with page number anchor
+            const basePath = '/mnt/user-data/uploads/14_Crucible_Act_II_Complete.pdf';
+            pdfFrame.src = `${basePath}#page=${pageNumber}`;
+        }
+
+        // Create key moment elements
+        keyMoments.forEach((moment, index) => {
+            const momentDiv = document.createElement('div');
+            momentDiv.className = 'key-moment';
+            momentDiv.dataset.time = moment.time;
+            momentDiv.dataset.index = index;
+            
+            const minutes = Math.floor(moment.time / 60);
+            const seconds = moment.time % 60;
+            const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            momentDiv.innerHTML = `
+                <div class="moment-time">${timeStr}</div>
+                <div class="moment-title">${moment.title}</div>
+                <div class="moment-description">${moment.description}</div>
+            `;
+            
+            momentDiv.addEventListener('click', () => {
+                audio.currentTime = moment.time;
+                audio.play();
+                scrollPDFToPage(moment.page);
+            });
+            
+            momentsContainer.appendChild(momentDiv);
+        });
+
+        // Update current moment as audio plays
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            
+            // Find the current moment
+            for (let i = keyMoments.length - 1; i >= 0; i--) {
+                if (currentTime >= keyMoments[i].time) {
+                    if (currentMomentIndex !== i) {
+                        currentMomentIndex = i;
+                        updateCurrentMoment(i);
+                        scrollPDFToPage(keyMoments[i].page);
+                    }
+                    break;
+                }
+            }
+        });
+
+        function updateCurrentMoment(index) {
+            // Update the "now playing" section
+            currentText.textContent = keyMoments[index].title;
+            
+            // Update active class on moments
+            const allMoments = document.querySelectorAll('.key-moment');
+            allMoments.forEach((moment, i) => {
+                if (i === index) {
+                    moment.classList.add('active');
+                    moment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    moment.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize first moment as active
+        updateCurrentMoment(0);
+    </script>
+</body>
+</html>
